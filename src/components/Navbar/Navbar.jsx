@@ -75,35 +75,38 @@ const Navbar = ({
   };
 
   const handleLogout = () => {
-    const deleteCookie = (name, path = '/', domain) => {
+    const deleteCookie = (name, path = "/", domain) => {
       if (!domain) {
         const hostname = window.location.hostname;
-        domain = hostname.startsWith('www.') ? hostname.substring(4) : hostname;
+        domain = hostname.startsWith("www.") ? hostname.substring(4) : hostname;
+      }
+      let secureFlag = "";
+      if (window.location.protocol === "https:") {
+        secureFlag = "Secure";
       }
       console.log(`Deleting cookie: ${name}; path=${path}; domain=${domain}`);
-      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}; domain=${domain}; Secure`;
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}; domain=${domain}; ${secureFlag}`;
     };
-  
+
     // Get all cookies
-    const cookies = document.cookie.split(';');
-    console.log('Cookies before logout:', document.cookie);
+    const cookies = document.cookie.split(";");
+    console.log("Cookies before logout:", document.cookie);
     for (const cookie of cookies) {
-      const [key] = cookie.trim().split('=');
-  
+      const [key] = cookie.trim().split("=");
+
       // Default delete
       deleteCookie(key);
-  
+
       // For subdomains
-      deleteCookie(key, '/', `.${window.location.hostname}`);
-  
+      deleteCookie(key, "/", `.${window.location.hostname}`);
+
       // Without www
-      deleteCookie(key, '/', window.location.hostname.replace('www.', ''));
+      deleteCookie(key, "/", window.location.hostname.replace("www.", ""));
     }
-  
+
     dispatch(setUser({ email: "", full_name: "", role: "" }));
-    console.log('Cookies after logout:', document.cookie);
+    console.log("Cookies after logout:", document.cookie);
   };
-  
 
   useEffect(() => {
     const access_token = getCookie("access_token");
